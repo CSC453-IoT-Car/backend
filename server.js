@@ -5,6 +5,6 @@ app.get('/', function (req, res) {
   res.send('Server Online')
 })
 
-app.listen(8000, function () {
+app.listen(3000, function () {
   console.log('Backend started on port 8000.')
 })
