@@ -6,5 +6,5 @@ app.get('/', function (req, res) {
 })
 
 app.listen(3000, function () {
-  console.log('Backend started on port 8000.')
+  console.log('Backend started on port 3000.')
 })
