@@ -73,9 +73,10 @@ app.post('/register', function (req, res) {
                     if (req.body.sessionKey == array[i].sessionKey) {
                         // We know them, but let them re-register.
                         console.log('Allowing old session to re-register');
+                        array.splice(i, 1);
                         break;
                     } else {
-                        console.log('Registration denied. Mismatched session keys.\n' + req.body.sessionKey + "\n"+ array[i].sessionKey);
+                        console.log('Registration denied. Mismatched session keys.\nReceived: ' + req.body.sessionKey + "\nExpected: "+ array[i].sessionKey);
                         res.sendStatus(403);
                         found = true;
                         break;
@@ -84,7 +85,6 @@ app.post('/register', function (req, res) {
             }
             if (!found) {
                 req.body.sessionKey = crypto.randomBytes(20).toString('hex');
-                var array = JSON.parse(response);
                 array.push(req.body);
                 cache.set(registered, JSON.stringify(array));
                 res.json({sessionKey: req.body.sessionKey});
