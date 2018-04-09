@@ -18,11 +18,11 @@ app.post('/register', function (req, res) {
     res.json({id: nextId});
     nextId++;
     request({
-        url: 'http://' + ip.split(':')[3] + ':8000/move',
+        url: 'http://' + ip.split(':')[3] + '/move',
         method: "POST",
         json: {}
     }, function (err, res, body) {
-        if (res.statusCode != 200) {
+        if (!res || res.statusCode != 200) {
             console.log(res.toJSON());
         } else {
             console.log('Sent move command.');
