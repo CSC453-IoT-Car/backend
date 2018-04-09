@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/CSC453-IoT-Car/backend#readme",
   "dependencies": {
-    "express": "^4.16.3"
+    "express": "^4.16.3",
+    "request": "^2.85.0"
   }
 }
