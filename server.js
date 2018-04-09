@@ -1,5 +1,7 @@
 var express = require('express');
+var bodyParser = require('body-parser')
 var app = express();
+app.use(bodyParser.json());
 var request = require('request');
 
 var nextId = 0;
@@ -9,7 +11,8 @@ app.get('/', function (req, res) {
 });
 
 app.post('/heartbeat', function (req, res) {
-    res.send('Received heartbeat.');
+    console.log('Received heartbeat from ' + req.body.id);
+    res.json({commands: ['move']});
 });
 
 app.post('/register', function (req, res) {
@@ -17,17 +20,6 @@ app.post('/register', function (req, res) {
     console.log('Registered vehicle with ip ' + ip.split(':')[3]);
     res.json({id: nextId});
     nextId++;
-    request({
-        url: 'http://' + ip.split(':')[3] + '/move',
-        method: "POST",
-        json: {}
-    }, function (err, res, body) {
-        if (!res || res.statusCode != 200) {
-            console.log(res.toJSON());
-        } else {
-            console.log('Sent move command.');
-        }
-    });
 });
 
 app.listen(3000, function () {
