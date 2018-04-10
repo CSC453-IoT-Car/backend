@@ -16,6 +16,7 @@ app.use(bodyParser.json());
 
 var registered = 'registered-list';
 var startTime = Math.floor(Date.now());
+var targetPrefix = 'target';
 
 app.get('/', function (req, res) {
     res.send('Server Online');
@@ -29,6 +30,13 @@ app.get('/registered', function(req, res) {
             res.send(err);
         }
     });
+});
+
+app.post('/set/target', function (req, res) {
+    if (req.body.id && req.body.targetId) {
+        console.log('Recieved target change request for ' + req.body.id + ' to ' + req.body.targetId);
+        cache.hset(targetPrefix, req.body.id, req.body.targetId);
+    }
 });
 
 app.post('/heartbeat', function (req, res) {
@@ -53,7 +61,13 @@ app.post('/heartbeat', function (req, res) {
             if (found === false) {
                 res.sendStatus(403);
             } else {
-                res.json({commands: ['move']});
+                cache.hget(targetPrefix, req.body.id, function (err, targetValue) {
+                    if (!err) {
+                        res.json({
+                            targetId: targetValue,
+                        });
+                    }
+                });
             }
         }
     });
@@ -95,5 +109,5 @@ app.post('/register', function (req, res) {
 
 app.listen(3000, function () {
     console.log('Backend started on port 3000.');
-    cache.set(registered, JSON.stringify([]));
+    //cache.set(registered, JSON.stringify([]));
 });
