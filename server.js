@@ -16,7 +16,7 @@ app.use(bodyParser.json());
 
 var registered = 'registered-list';
 var startTime = Math.floor(Date.now());
-var targetPrefix = 'target';
+var heartbeatResponses = 'responses';
 
 app.get('/', function (req, res) {
     res.send('Server Online');
@@ -35,7 +35,62 @@ app.get('/registered', function(req, res) {
 app.post('/set/target', function (req, res) {
     if (req.body.id && req.body.targetId) {
         console.log('Recieved target change request for ' + req.body.id + ' to ' + req.body.targetId);
-        cache.hset(targetPrefix, req.body.id, req.body.targetId);
+        cache.hget(heartbeatResponses, req.body.id, function (err, respon) {
+            var updated = JSON.parse(respon);
+            if (!updated) {
+                updated = {};
+            }
+            if (!err) {
+                updated.targetId = req.body.targetId;
+                cache.hset(heartbeatResponses, req.body.blockedById, JSON.stringify(updated));
+            }
+        });
+    }
+});
+
+app.post('/notify/blocked', function (req, res) {
+    if (req.body.id && req.body.blockedById) {
+        console.log('Recieved blocked notification from ' + req.body.id + ': Blocked by ' + req.body.blockedById);
+        cache.get(registered, function(err, response) {
+            if (!err) {
+                var array = JSON.parse(response);
+                var targetIndex = -1;
+                for (var i = 0; i < array.length; i++) {
+                    if (array[i].id == req.body.blockedById && Math.floor(Date.now()) - array[i].lastCom < 10000) {
+                        targetIndex = i;
+                        break;
+                    }
+                }
+                if (targetIndex != -1) {
+                    if (array[targetIndex].status == 'navigating') {
+                        console.log(req.body.id + ' is blocked by moving vehicle, instructing to wait.');
+                        res.json({
+                            action: 'wait'
+                        });
+                    } else if (array[targetIndex].status == 'idle') {
+                        console.log(req.body.id + ' is blocked by an idle vehicle, instructing ' + req.body.id + ' to wait for remote resolution.');
+                        cache.hget(heartbeatResponses, req.body.blockedById, function (err, respon) {
+                            var updated = JSON.parse(respon);
+                            if (!updated) {
+                                updated = {};
+                            }
+                            if (!err) {
+                                updated.blocking = req.body.id;
+                                cache.hset(heartbeatResponses, req.body.blockedById, JSON.stringify(updated));
+                            }
+                        });
+                        res.json({
+                            action: 'resolve-remote'
+                        });
+                    }
+                } else {
+                    console.log(req.body.id + ' is blocked by an unregistered object. Instructing to resolve locally.');
+                    res.json({
+                        action: 'resolve-local'
+                    });
+                }
+            }
+        });
     }
 });
 
@@ -61,11 +116,11 @@ app.post('/heartbeat', function (req, res) {
             if (found === false) {
                 res.sendStatus(403);
             } else {
-                cache.hget(targetPrefix, req.body.id, function (err, targetValue) {
-                    if (!err) {
-                        res.json({
-                            targetId: targetValue,
-                        });
+                cache.hget(heartbeatResponses, req.body.id, function (err, respon) {
+                    if (!respon) {
+                        res.json({});
+                    } else {
+                        res.json(JSON.parse(respon));
                     }
                 });
             }
