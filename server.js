@@ -162,6 +162,61 @@ app.post('/register', function (req, res) {
     });
 });
 
+app.post('/beacon/register', function (req, res) {
+    if (req.body && req.body.id) {
+        console.log('Received request to register a target beacon with id ' + req.body.id);
+        cache.get(registered, function (err, response) {
+            if (!err) {
+                var array = JSON.parse(response);
+                var found = false;
+                for (var i = 0; i < array.length; i++) {
+                    if (array[i].id == req.body.id) {
+                        console.log('Entity with ' + req.body.id + '\'s requested id already exists.');
+                        found = true;
+                        res.sendStatus(403);
+                        break;
+                    }
+                }
+                if (!found) {
+                    array.push({
+                        id: req.body.id,
+                        type: 'beacon'
+                    });
+                    cache.set(registered, JSON.stringify(array));
+                    res.sendStatus(200);
+                }
+            }
+        });
+    }
+});
+
+app.post('/remove', function (req, res) {
+    if (req.body && req.body.id) {
+        console.log('Received request to remove ' + req.body.id);
+        cache.get(registered, function (err, response) {
+            if (!err) {
+                var array = JSON.parse(response);
+                var index = -1;
+                for (var i = 0; i < array.length; i++) {
+                    if (array[i].id == req.body.id) {
+                        index = i;
+                        break;
+                    }
+                }
+                if (index != -1) {
+                    console.log('Removed ' + req.body.id);
+                    array.splice(index, 1);
+                    cache.set(registered, JSON.stringify(array));
+                    res.sendStatus(200);
+                } else {
+                    console.log('Could not remove ' + req.body.id + ': Not found');
+                    res.json({error: 'Not found'});
+                }
+            }
+        });
+    }
+});
+
 app.listen(3000, function () {
     console.log('Backend started on port 3000.');
     //cache.set(registered, JSON.stringify([]));
