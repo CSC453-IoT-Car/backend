@@ -82,6 +82,11 @@ app.post('/notify/blocked', function (req, res) {
                         res.json({
                             action: 'resolve-remote'
                         });
+                    } else {
+                        console.log(req.body.id + ' is blocked by a vehicle with unknown status, instructing to resolve locally.');
+                        res.json({
+                            action: 'resolve-local'
+                        });
                     }
                 } else {
                     console.log(req.body.id + ' is blocked by an unregistered object. Instructing to resolve locally.');
