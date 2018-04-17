@@ -45,6 +45,9 @@ app.post('/set/target', function (req, res) {
                 cache.hset(heartbeatResponses, req.body.blockedById, JSON.stringify(updated));
             }
         });
+        res.sendStatus(200);
+    } else {
+        res.sendStatus(400);
     }
 });
 
