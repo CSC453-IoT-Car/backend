@@ -72,11 +72,11 @@ app.post('/set/target', function (req, res) {
     if (req.body.id && req.body.targetId) {
         console.log('Recieved target change request for ' + req.body.id + ' to ' + req.body.targetId);
         cache.hget(heartbeatResponses, req.body.id, function (err, respon) {
-            var updated = JSON.parse(respon);
-            if (!updated) {
-                updated = {};
-            }
             if (!err) {
+                var updated = JSON.parse(respon);
+                if (!updated) {
+                    updated = {};
+                }
                 updated.targetId = req.body.targetId;
                 cache.hset(heartbeatResponses, req.body.id, JSON.stringify(updated));
             }
@@ -164,6 +164,7 @@ app.post('/heartbeat', function (req, res) {
                     if (!respon) {
                         res.json({});
                     } else {
+                        console.log('Sent update communication to ' + req.body.id);
                         res.json(JSON.parse(respon));
                     }
                 });
