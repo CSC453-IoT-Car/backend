@@ -1,5 +1,9 @@
 {
 	"redis" : {
 		"password": "SOMEPASSWORD"
+	},
+	"web" : {
+		"password": "SOMEPASSWORD"
+		"key": "SOMEKEY"	
 	}
 }

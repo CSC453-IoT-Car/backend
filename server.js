@@ -23,8 +23,26 @@ var registered = 'registered-list';
 var startTime = Math.floor(Date.now());
 var heartbeatResponses = 'responses';
 
+function checkPass(pass) {
+    if (pass != config.web.password) {
+        return false;
+    }
+    return true;
+}
+
 app.get('/', function (req, res) {
     res.send('Server Online');
+});
+
+app.post('/login', function (req, res) {
+    if (!req.pass || checkPass(req.body.pass)) {
+        res.sendStatus(403);
+        return;
+    } else {
+        res.json({
+            key: config.web.key
+        });
+    }
 });
 
 app.get('/registered', function(req, res) {
@@ -38,6 +56,10 @@ app.get('/registered', function(req, res) {
 });
 
 app.post('/set/target', function (req, res) {
+    if (!req.body || checkPass(req.body.pass)) {
+        res.sendStatus(403);
+        return;
+    }
     if (req.body.id && req.body.targetId) {
         console.log('Recieved target change request for ' + req.body.id + ' to ' + req.body.targetId);
         cache.hget(heartbeatResponses, req.body.id, function (err, respon) {
@@ -47,7 +69,7 @@ app.post('/set/target', function (req, res) {
             }
             if (!err) {
                 updated.targetId = req.body.targetId;
-                cache.hset(heartbeatResponses, req.body.blockedById, JSON.stringify(updated));
+                cache.hset(heartbeatResponses, req.body.id, JSON.stringify(updated));
             }
         });
         res.sendStatus(200);
@@ -142,6 +164,10 @@ app.post('/heartbeat', function (req, res) {
 });
 
 app.post('/register', function (req, res) {
+    if (!req.body || checkPass(req.body.pass)) {
+        res.sendStatus(403);
+        return;
+    }
     var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
     console.log('Received registration request from vehicle with ip ' + ip.split(':')[3]);
     req.body.lastCom = Math.floor(Date.now());
@@ -176,6 +202,10 @@ app.post('/register', function (req, res) {
 });
 
 app.post('/beacon/register', function (req, res) {
+    if (!req.body || checkPass(req.body.pass)) {
+        res.sendStatus(403);
+        return;
+    }
     if (req.body && req.body.id) {
         console.log('Received request to register a target beacon with id ' + req.body.id);
         cache.get(registered, function (err, response) {
@@ -204,6 +234,10 @@ app.post('/beacon/register', function (req, res) {
 });
 
 app.post('/remove', function (req, res) {
+    if (!req.body || checkPass(req.body.pass)) {
+        res.sendStatus(403);
+        return;
+    }
     if (req.body && req.body.id) {
         console.log('Received request to remove ' + req.body.id);
         cache.get(registered, function (err, response) {
