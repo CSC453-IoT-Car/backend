@@ -3,7 +3,7 @@
 		"password": "SOMEPASSWORD"
 	},
 	"web" : {
-		"password": "SOMEPASSWORD"
+		"password": "SOMEPASSWORD",
 		"key": "SOMEKEY"	
 	}
 }
