@@ -44,7 +44,7 @@ app.get('/', function (req, res) {
 });
 
 app.post('/login', function (req, res) {
-    if (!req.body || checkPass(req.body.pass)) {
+    if (!req.body || !checkPass(req.body.pass)) {
         res.sendStatus(403);
         return;
     } else {
@@ -65,7 +65,7 @@ app.get('/registered', function(req, res) {
 });
 
 app.post('/set/target', function (req, res) {
-    if (!req.body || checkKey(req.body.key)) {
+    if (!req.body || !checkKey(req.body.key)) {
         res.sendStatus(403);
         return;
     }
@@ -173,7 +173,7 @@ app.post('/heartbeat', function (req, res) {
 });
 
 app.post('/register', function (req, res) {
-    if (!req.body || checkKey(req.body.key)) {
+    if (!req.body || !checkKey(req.body.key)) {
         res.sendStatus(403);
         return;
     }
@@ -211,7 +211,7 @@ app.post('/register', function (req, res) {
 });
 
 app.post('/beacon/register', function (req, res) {
-    if (!req.body || checkKey(req.body.key)) {
+    if (!req.body || !checkKey(req.body.key)) {
         res.sendStatus(403);
         return;
     }
@@ -243,7 +243,7 @@ app.post('/beacon/register', function (req, res) {
 });
 
 app.post('/remove', function (req, res) {
-    if (!req.body || checkKey(req.body.key)) {
+    if (!req.body || !checkKey(req.body.key)) {
         res.sendStatus(403);
         return;
     }
