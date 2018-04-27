@@ -173,10 +173,6 @@ app.post('/heartbeat', function (req, res) {
 });
 
 app.post('/register', function (req, res) {
-    if (!req.body || !checkKey(req.body.key)) {
-        res.sendStatus(403);
-        return;
-    }
     var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
     console.log('Received registration request from vehicle with ip ' + ip.split(':')[3]);
     req.body.lastCom = Math.floor(Date.now());
