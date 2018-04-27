@@ -270,6 +270,8 @@ app.post('/remove', function (req, res) {
                 }
             }
         });
+    } else {
+        res.sendStatus(400);
     }
 });
 
