@@ -24,6 +24,7 @@ var startTime = Math.floor(Date.now());
 var heartbeatResponses = 'responses';
 
 function checkPass(pass) {
+    console.log('Got login request using password: ' + pass);
     if (pass != config.web.password) {
         return false;
     }
@@ -31,6 +32,7 @@ function checkPass(pass) {
 }
 
 function checkKey(key) {
+    console.log('Got request using key: ' + key);
     if (key != config.web.key) {
         return false;
     }
