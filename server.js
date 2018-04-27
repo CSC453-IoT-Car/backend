@@ -164,7 +164,8 @@ app.post('/heartbeat', function (req, res) {
                     if (!respon) {
                         res.json({});
                     } else {
-                        console.log('Sent update communication to ' + req.body.id);
+                        console.log('Sent update communication to ' + req.body.id + ' contains ');
+                        console.log(respon);
                         res.json(JSON.parse(respon));
                     }
                 });
