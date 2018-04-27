@@ -167,6 +167,7 @@ app.post('/heartbeat', function (req, res) {
                         console.log('Sent update communication to ' + req.body.id + ' contains ');
                         console.log(respon);
                         res.json(JSON.parse(respon));
+                        cache.hdel(heartbeatResponses, req.body.id);
                     }
                 });
             }
