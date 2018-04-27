@@ -13,6 +13,9 @@ console.log('Connected to redis...');
 
 var app = express();
 app.use(bodyParser.json());
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+});
 
 var registered = 'registered-list';
 var startTime = Math.floor(Date.now());
