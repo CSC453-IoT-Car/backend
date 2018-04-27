@@ -15,6 +15,8 @@ var app = express();
 app.use(bodyParser.json());
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, x-access-token, Content-Type, Accept, Authorization");
+    next();
 });
 
 var registered = 'registered-list';
